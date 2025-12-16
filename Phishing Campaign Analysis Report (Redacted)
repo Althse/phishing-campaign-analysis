@@ -1,0 +1,146 @@
+# Phishing Campaign Analysis Report (Redacted)
+
+**Author:** Sławomir Cieślik
+**Date:** December 2025
+**Report type:** Technical / Analytical (DFIR / SOC)
+**Scope:** Passive analysis, no interaction with attacker infrastructure
+
+> **Redaction note (Option B):**
+> This public version preserves domain names for contextual purposes while removing specific URL paths, parameters, and endpoints. The report is intended for educational and portfolio use and follows responsible disclosure principles.
+
+---
+
+## 1. Executive Summary
+
+The objective of this analysis was to technically investigate a suspicious email message containing a link presented as a parcel tracking notification. The investigation confirmed that the activity represents a **credential harvesting phishing campaign** leveraging a multi-stage redirection chain and a fake login panel impersonating an administrative system associated with “Eastend Hotels & Resorts”.
+
+Key characteristics of the campaign include:
+
+* use of intermediary redirection domains,
+* backend logic dependent on URL structure and routing,
+* implementation flaws resulting in inconsistent HTTP responses (404 vs. login panel),
+* a prepared frontend stack (CSS/JS) typical of credential harvesting kits.
+
+The analysis was conducted in an **isolated virtual environment**, using strictly passive techniques and maintaining operational security throughout the process.
+
+---
+
+## 2. Scope and Methodology
+
+The analysis covered:
+
+* inspection of the original phishing email (HTML structure),
+* identification and contextual review of embedded links,
+* observation of target page behavior in a web browser,
+* passive network traffic analysis using browser Developer Tools (Network tab),
+* decoding and verification of Base64-encoded payloads,
+* correlation of application behavior with different URL variants.
+
+The following actions were **explicitly excluded**:
+
+* submission of any data to forms,
+* interaction with the phishing backend,
+* active testing such as fuzzing, brute-force attempts, or exploitation.
+
+---
+
+## 3. Analysis Environment Preparation
+
+### 3.1 Virtual Machine Setup
+
+The investigation was performed on a **Windows 11 x64** virtual machine running under VMware.
+
+Security controls applied:
+
+* no direct host network exposure,
+* disabled host–guest integration features (clipboard sharing, drag & drop, shared folders),
+* use of a local user account only,
+* snapshot created prior to analysis activities.
+
+### 3.2 Monitoring and Tooling
+
+The following tools and techniques were used:
+
+* browser Developer Tools (Network tab with Preserve Log and Disable Cache enabled),
+* Incognito / InPrivate browsing mode,
+* passive network observation on the host system using Wireshark.
+
+---
+
+## 4. Phishing Email Analysis
+
+The phishing email contained HTML-formatted content and a hyperlink described as a shipment tracking function. Structural analysis and contextual review indicate that the link was not associated with any legitimate logistics provider.
+
+### 4.1 Domains Observed in the Campaign
+
+* **Lure domain:** `waterautomation.com`
+* **Intermediary redirector:** `zasobygwp.pl`
+
+---
+
+## 5. Redirection Chain Analysis
+
+A multi-stage redirection mechanism was observed:
+
+1. User interaction with the email link
+2. Redirection to the lure domain
+3. Forwarding through an intermediary redirector
+4. Attempted resource loading on the phishing backend
+
+### 5.1 Phishing Backend
+
+* **Backend domain:** `admin.eastend.in`
+
+Initial access attempts resulted in HTTP 404 responses, suggesting routing errors or conditional backend logic.
+
+---
+
+## 6. Application Routing Anomaly
+
+Altering the URL structure (without changing the domain) resulted in the display of a **fully functional login panel**. This behavior strongly indicates:
+
+* misconfigured routing rules (e.g., PHP routing or rewrite logic),
+* backend logic dependent on specific URL patterns,
+* low implementation maturity of the phishing kit.
+
+Such inconsistencies are commonly observed in hastily deployed or poorly maintained phishing infrastructures.
+
+---
+
+## 7. Payload Analysis (Base64)
+
+One stage of the redirection chain included a parameter encoded in Base64.
+
+Decoding was performed locally, without transmitting data externally. The decoded output did not directly match the visible plaintext URL, suggesting the use of a simple mechanism for:
+
+* obfuscation,
+* click tracking,
+* basic session or victim identification.
+
+---
+
+## 8. Technical Conclusions
+
+1. The campaign represents a **credential harvesting phishing operation**.
+2. The infrastructure consists of a lure domain, an intermediary redirector, and a phishing backend.
+3. Backend routing misconfigurations lead to inconsistent application behavior.
+4. The login panel is clearly designed to capture user credentials.
+5. Despite its low technical quality, the campaign poses a real risk to unsuspecting users.
+
+---
+
+## 9. Recommendations
+
+* Report the involved domains to appropriate CERT or abuse handling teams.
+* Implement DNS and proxy-level blocking in corporate environments.
+* Increase user awareness and training regarding phishing email recognition.
+
+---
+
+## 10. Final Notes
+
+This report was prepared for educational and portfolio purposes. The analysis was conducted using passive techniques only and adheres to responsible disclosure and ethical security research practices.
+
+---
+
+**End of Report**
