@@ -1,0 +1,112 @@
+# Methodology Notes – DFIR Phishing Case Study
+
+## Purpose of This Document
+
+This document provides supplementary notes describing the analyst’s methodology, decision-making process, and operational security considerations applied during the phishing campaign analysis. It is intended to complement the main report and demonstrate a DFIR-oriented mindset rather than present additional findings.
+
+---
+
+## Analysis Approach
+
+The analysis followed a **defensive and investigative DFIR approach**, focused on understanding attacker infrastructure, campaign flow, and potential impact without interacting with or influencing the attacker-controlled environment.
+
+The primary goals were:
+
+* identify the nature of the threat,
+* understand infrastructure relationships (lure → redirector → backend),
+* observe application behavior safely and passively,
+* document findings in a reproducible and responsible manner.
+
+At no point was the objective to disrupt, exploit, or interact with the phishing infrastructure.
+
+---
+
+## Environment Isolation and OPSEC
+
+All activities were conducted inside an isolated virtual machine to reduce risk and prevent cross-contamination with the host system.
+
+Key isolation measures:
+
+* VMware-based Windows 11 virtual machine
+* Host–guest integrations disabled (clipboard, drag & drop, shared folders)
+* Local user account only (no cloud or identity synchronization)
+* Snapshot created prior to analysis for rapid rollback
+
+These controls ensured that any unintended execution or tracking mechanisms would remain contained within the VM.
+
+---
+
+## Network Observation Strategy
+
+Network activity was observed using a **strictly passive strategy**:
+
+* Browser Developer Tools (Network tab) were used to inspect requests and responses at the application layer
+* Logging was preserved and browser cache disabled to maintain full visibility
+* Wireshark was enabled on the host system to provide an additional, non-intrusive view of outbound traffic patterns
+
+No packet manipulation, request replay, or manual request crafting was performed.
+
+---
+
+## Interaction Policy
+
+The following explicit rules were applied throughout the analysis:
+
+* No credentials were entered into any form
+* No form submission or POST requests were intentionally triggered
+* No automated tools were used against the phishing backend
+* No enumeration, brute-force, or fuzzing activity was conducted
+
+This policy aligns with ethical security research standards and ensures that the analysis did not contribute to attacker success metrics.
+
+---
+
+## URL Handling and Redaction
+
+During analysis, URL behavior was examined only to the extent necessary to understand routing logic and application flow.
+
+For public release:
+
+* Domain names were preserved to maintain analytical context
+* URL paths, parameters, and backend endpoints were removed or generalized
+* No fully functional phishing URLs are disclosed
+
+This redaction strategy follows common industry practices used in public DFIR and threat intelligence reporting.
+
+---
+
+## Evidence Handling
+
+Screenshots were captured immediately after relevant observations and stored locally.
+
+Good practices applied:
+
+* screenshots taken close in time to the observed behavior
+* consistent naming convention (Fig.1, Fig.2, etc.)
+* no modification of visual evidence beyond redaction where required
+
+Screenshots are referenced in the main report and stored separately within the repository.
+
+---
+
+## Limitations
+
+This analysis has intentional limitations:
+
+* no backend validation of credential exfiltration
+* no server-side insight into attacker logging or storage
+* no attribution attempt beyond observed infrastructure
+
+These limitations are a direct result of the passive-only analysis approach.
+
+---
+
+## Closing Remarks
+
+This methodology reflects real-world DFIR constraints, where analysts often operate with incomplete information and must balance technical curiosity with ethical and legal responsibility.
+
+The intent of this case study is to demonstrate analytical thinking, operational discipline, and documentation quality rather than to expose or dismantle attacker infrastructure.
+
+---
+
+**End of Methodology Notes**
